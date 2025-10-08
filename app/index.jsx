@@ -170,6 +170,8 @@ const styles = StyleSheet.create({
     maxWidth: 960,
     marginBottom: 5, // reduced margin for search box below
     paddingHorizontal: 20,
+    marginLeft: -50,
+
   },
   mobileNavBar: {
     flexDirection: "row",
