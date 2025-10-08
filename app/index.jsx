@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { useState } from "react";
 import {
-  Button,
   Image,
   Modal,
   ScrollView,
@@ -11,7 +10,7 @@ import {
   TextInput,
   TouchableOpacity,
   useWindowDimensions,
-  View
+  View,
 } from "react-native";
 
 export default function HomeScreen() {
@@ -19,50 +18,67 @@ export default function HomeScreen() {
   const isWeb = width >= 768;
   const [menuVisible, setMenuVisible] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const toggleMenu = () => setMenuVisible(!menuVisible);
   const toggleSearch = () => setSearchOpen(!searchOpen);
 
-  // Logo sizes
   const logoWidth = isWeb ? width * 0.2 : width * 0.45;
   const logoHeight = logoWidth * 0.33;
 
+  const navItems = [
+    { label: "Home", href: "/" },
+    { label: "6 Months", href: "/SixmonthsScreen" },
+    { label: "6 Weeks", href: "/SixweeksScreen" },
+    { label: "Contact", href: "/ContactScreen" },
+  ];
+
   const NavLinks = ({ onClick }) => (
-    <View style={isWeb ? styles.navLinksHorizontal : styles.navLinksVertical}>
-      <Link href="/" asChild>
-        <TouchableOpacity onPress={onClick} style={styles.navButton}>
-          <Text style={styles.navButtonText}>Home</Text>
-        </TouchableOpacity>
-      </Link>
-      <Link href="/SixmonthsScreen" asChild>
-        <TouchableOpacity onPress={onClick} style={styles.navButton}>
-          <Text style={styles.navButtonText}>6 Months</Text>
-        </TouchableOpacity>
-      </Link>
-      <Link href="/SixweeksScreen" asChild>
-        <TouchableOpacity onPress={onClick} style={styles.navButton}>
-          <Text style={styles.navButtonText}>6 Weeks</Text>
-        </TouchableOpacity>
-      </Link>
-      <Link href="/ContactScreen" asChild>
-        <TouchableOpacity onPress={onClick} style={styles.navButton}>
-          <Text style={styles.navButtonText}>Contact</Text>
-        </TouchableOpacity>
-      </Link>
+    <View style={isWeb ? styles.navLinksPillContainer : styles.navLinksVertical}>
+      {navItems.map(({ label, href }, i) => (
+        <Link href={href} key={label} asChild>
+          <TouchableOpacity
+            onPress={() => {
+              onClick && onClick();
+              setActiveIndex(i);
+            }}
+            style={styles.navLinkItem}
+          >
+            <View
+              style={[
+                styles.navCircle,
+                activeIndex === i
+                  ? styles.navCircleActive
+                  : styles.navCircleInactive,
+              ]}
+            />
+            <Text
+              style={[
+                styles.navLinkText,
+                activeIndex === i && styles.navLinkTextActive,
+              ]}
+            >
+              {label}
+            </Text>
+          </TouchableOpacity>
+        </Link>
+      ))}
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Empowering The Nation</Text>
-
       {isWeb ? (
         <View style={styles.webNavBar}>
           <Link href="/" asChild>
-            <TouchableOpacity>
+            <TouchableOpacity style={styles.logoWrapper}>
               <Image
                 source={require("../assets/logo_black.png")}
-                style={{ width: logoWidth, height: logoHeight, resizeMode: "contain" }}
+                style={{
+                  width: logoWidth,
+                  height: logoHeight,
+                  resizeMode: "contain",
+                }}
               />
             </TouchableOpacity>
           </Link>
@@ -83,7 +99,11 @@ export default function HomeScreen() {
             <TouchableOpacity style={styles.logoTouchable}>
               <Image
                 source={require("../assets/logo_black.png")}
-                style={{ width: logoWidth, height: logoHeight, resizeMode: "contain" }}
+                style={{
+                  width: logoWidth,
+                  height: logoHeight,
+                  resizeMode: "contain",
+                }}
               />
             </TouchableOpacity>
           </Link>
@@ -107,7 +127,11 @@ export default function HomeScreen() {
           <Modal visible={menuVisible} animationType="slide" transparent={true}>
             <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
-                <TouchableOpacity onPress={toggleMenu} style={styles.closeButton} accessibilityLabel="Close menu">
+                <TouchableOpacity
+                  onPress={toggleMenu}
+                  style={styles.closeButton}
+                  accessibilityLabel="Close menu"
+                >
                   <Ionicons name="close" size={32} color="black" />
                 </TouchableOpacity>
                 <ScrollView>
@@ -119,7 +143,6 @@ export default function HomeScreen() {
         </View>
       )}
 
-      {/* Search box */}
       {searchOpen && (
         <View style={isWeb ? styles.searchBoxWeb : styles.searchBoxMobile}>
           <TextInput
@@ -129,21 +152,6 @@ export default function HomeScreen() {
           />
         </View>
       )}
-
-      <View style={styles.buttonSection}>
-        <Link href="/SixmonthsScreen" asChild>
-          <Button title="View Six-Month Courses" />
-        </Link>
-        <Link href="/SixweeksScreen" asChild>
-          <Button title="View Six-Week Courses" />
-        </Link>
-        <Link href="/FeesandFormScreen" asChild>
-          <Button title="Fees & Form" />
-        </Link>
-        <Link href="/ContactScreen" asChild>
-          <Button title="Contact Us" />
-        </Link>
-      </View>
     </View>
   );
 }
@@ -156,23 +164,77 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 30,
-    textAlign: "center",
-  },
+
   webNavBar: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "flex-start",  // moved from space-between to flex-start
+  width: "100%",
+  maxWidth: 960,
+  paddingHorizontal: -100,
+  paddingVertical: 10,
+  marginBottom: 10,
+  backgroundColor: "#fff",
+},
+
+  logoWrapper: {
+  marginRight: -80, // reduce margin to pull closer to nav links
+},
+
+  navLinksPillContainer: {
+  flexDirection: "row",
+  backgroundColor: "#eee",
+  borderRadius: 25,
+  paddingHorizontal: -100,
+  paddingVertical: 8,
+  alignItems: "center",
+  gap: 20,
+  // Remove flex: 1 or justifyContent for left alignment
+},
+
+  navLinksVertical: {
+    flexDirection: "column",
+    gap: 15,
+  },
+
+  navLinkItem: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    maxWidth: 960,
-    marginBottom: 5, // reduced margin for search box below
-    paddingHorizontal: 20,
-    marginLeft: -50,
-
+    cursor: "pointer",
+    paddingHorizontal: 30,
   },
+
+  navCircle: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 1.5,
+    borderColor: "#000",
+    marginRight: 8,
+  },
+
+  navCircleInactive: {
+    backgroundColor: "transparent",
+  },
+
+  navCircleActive: {
+    backgroundColor: "#000",
+  },
+
+  navLinkText: {
+    fontSize: 18,
+    color: "#181414ff",
+  },
+
+  navLinkTextActive: {
+    fontWeight: "bold",
+    color: "#000",
+  },
+
+  searchButtonWeb: {
+    paddingHorizontal: 10,
+  },
+
   mobileNavBar: {
     flexDirection: "row",
     alignItems: "center",
@@ -181,46 +243,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 5,
   },
+
   logoTouchable: {
-    marginLeft: -80, // move logo left on mobile
+    marginLeft: -80,
   },
-  navLinksHorizontal: {
-    flexDirection: "row",
-    gap: 20,
-    flex: 1,
-    justifyContent: "center",
-  },
-  navLinksVertical: {
-    flexDirection: "column",
-    gap: 15,
-  },
-  navButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    backgroundColor: "#cce5ff",
-    borderRadius: 8,
-  },
-  navButtonText: {
-    fontSize: 18,
-    color: "#004085",
-  },
-  searchButtonWeb: {
-    paddingHorizontal: 10,
-  },
+
   searchButtonMobile: {
-  position: "absolute",
-  left: "50%",
-  transform: [{ translateX: -10 }], // centers horizontally by half icon size
-},
+    position: "absolute",
+    left: "50%",
+    transform: [{ translateX: -10 }],
+  },
 
   hamburgerButton: {
     marginLeft: 15,
   },
+
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "flex-start",
   },
+
   modalContent: {
     backgroundColor: "white",
     paddingTop: 40,
@@ -228,20 +271,24 @@ const styles = StyleSheet.create({
     paddingBottom: 60,
     minHeight: "50%",
   },
+
   closeButton: {
     alignSelf: "flex-end",
     marginBottom: 20,
   },
+
   searchBoxWeb: {
     width: "100%",
     maxWidth: 960,
     marginBottom: 20,
   },
+
   searchBoxMobile: {
     width: "100%",
     marginBottom: 20,
     paddingHorizontal: 10,
   },
+
   searchInput: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -249,14 +296,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 8,
     fontSize: 16,
-  },
-  buttonSection: {
-    width: "100%",
-    maxWidth: 400,
-    gap: 15,
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
   },
 });
 
