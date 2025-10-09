@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Image,
@@ -14,6 +14,7 @@ import {
 } from "react-native";
 
 export default function HomeScreen() {
+  const router = useRouter();
   const { width } = useWindowDimensions();
   const isWeb = width >= 768;
   const [menuVisible, setMenuVisible] = useState(false);
@@ -70,18 +71,21 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {isWeb ? (
         <View style={styles.webNavBar}>
-          <Link href="/" asChild>
-            <TouchableOpacity style={styles.logoWrapper}>
-              <Image
-                source={require("../assets/logo_black.png")}
-                style={{
-                  width: logoWidth,
-                  height: logoHeight,
-                  resizeMode: "contain",
-                }}
-              />
-            </TouchableOpacity>
-          </Link>
+          <TouchableOpacity
+            style={styles.logoWrapper}
+            onPress={() => router.push("/")}
+            accessible={true}
+            accessibilityLabel="Go to Home"
+          >
+            <Image
+              source={require("../assets/logo_black.png")}
+              style={{
+                width: logoWidth,
+                height: logoHeight,
+                resizeMode: "contain",
+              }}
+            />
+          </TouchableOpacity>
 
           <NavLinks />
 
@@ -95,18 +99,21 @@ export default function HomeScreen() {
         </View>
       ) : (
         <View style={styles.mobileNavBar}>
-          <Link href="/" asChild>
-            <TouchableOpacity style={styles.logoTouchable}>
-              <Image
-                source={require("../assets/logo_black.png")}
-                style={{
-                  width: logoWidth,
-                  height: logoHeight,
-                  resizeMode: "contain",
-                }}
-              />
-            </TouchableOpacity>
-          </Link>
+          <TouchableOpacity
+            style={styles.logoTouchable}
+            onPress={() => router.push("/")}
+            accessible={true}
+            accessibilityLabel="Go to Home"
+          >
+            <Image
+              source={require("../assets/logo_black.png")}
+              style={{
+                width: logoWidth,
+                height: logoHeight,
+                resizeMode: "contain",
+              }}
+            />
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.searchButtonMobile}
@@ -166,32 +173,31 @@ const styles = StyleSheet.create({
   },
 
   webNavBar: {
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "space-between",  // moved from space-between to flex-start
-  width: "100%",
-  maxWidth: 1200,            // increase maxWidth for more space
-  paddingHorizontal: 40,
-  paddingVertical: 10,
-  marginBottom: 10,
-  marginRight: "auto",       // align container to right for centering page
-  backgroundColor: "#fff",
-},
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    maxWidth: 1200,
+    paddingHorizontal: 40,
+    paddingVertical: 10,
+    marginBottom: 10,
+    marginRight: "auto",
+    backgroundColor: "#fff",
+  },
 
   logoWrapper: {
-  marginRight: -80, // reduce margin to pull closer to nav links
-},
+    marginRight: -80,
+  },
 
   navLinksPillContainer: {
-  flexDirection: "row",
-  backgroundColor: "#eee",
-  borderRadius: 25,
-  paddingHorizontal: -100,
-  paddingVertical: 8,
-  alignItems: "center",
-  gap: 20,
-  // Remove flex: 1 or justifyContent for left alignment
-},
+    flexDirection: "row",
+    backgroundColor: "#eee",
+    borderRadius: 25,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    alignItems: "center",
+    gap: 20,
+  },
 
   navLinksVertical: {
     flexDirection: "column",
@@ -299,6 +305,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+
 
 
 
