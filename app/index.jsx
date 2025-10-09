@@ -146,7 +146,7 @@ export default function HomeScreen() {
       {searchOpen && (
         <View style={isWeb ? styles.searchBoxWeb : styles.searchBoxMobile}>
           <TextInput
-            placeholder="Search Empowering The Nation"
+            placeholder="Search for courses"
             style={styles.searchInput}
             autoFocus={true}
           />
@@ -168,12 +168,13 @@ const styles = StyleSheet.create({
   webNavBar: {
   flexDirection: "row",
   alignItems: "center",
-  justifyContent: "flex-start",  // moved from space-between to flex-start
+  justifyContent: "space-between",  // moved from space-between to flex-start
   width: "100%",
-  maxWidth: 960,
-  paddingHorizontal: -100,
+  maxWidth: 1200,            // increase maxWidth for more space
+  paddingHorizontal: 40,
   paddingVertical: 10,
   marginBottom: 10,
+  marginRight: "auto",       // align container to right for centering page
   backgroundColor: "#fff",
 },
 
