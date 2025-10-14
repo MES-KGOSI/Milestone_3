@@ -14,10 +14,26 @@ import {
   View,
 } from "react-native";
 
-//Static imports for images (works for both mobile and web)
-import homeBannerWeb from '../assets/banner.png';
-import homeBannerMobile from '../assets/banner_mobile.png';
-import logoBlack from '../assets/logo_black.png';
+// Import images directly
+import bannerMobile from "../assets/bannerMobile.png";
+import bannerWeb from "../assets/bannerWeb.png";
+import logoBlack from "../assets/logoBlack.png";
+
+//  Reusable image component with wrapper View
+function ResponsiveImage({ source, widthRatio = 0.45, aspectRatio = 3, style = {} }) {
+  const { width } = useWindowDimensions();
+  const imageWidth = width * widthRatio;
+  const imageHeight = imageWidth / aspectRatio;
+
+  return (
+    <View style={styles.imageWrapper}>
+      <Image
+        source={source}
+        style={[{ width: imageWidth, height: imageHeight, resizeMode: "contain" }, style]}
+      />
+    </View>
+  );
+}
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -31,9 +47,6 @@ export default function HomeScreen() {
   const toggleMenu = () => setMenuVisible(!menuVisible);
   const toggleSearch = () => setSearchOpen(!searchOpen);
 
-  const logoWidth = isWeb ? width * 0.2 : width * 0.45;
-  const logoHeight = logoWidth * 0.33;
-
   const navItems = [
     { label: "Home", href: "/" },
     { label: "6 Months", href: "/SixmonthsScreen" },
@@ -41,9 +54,6 @@ export default function HomeScreen() {
     { label: "Contact", href: "/ContactScreen" },
   ];
 
-  const bannerSource = isWeb ? homeBannerWeb : homeBannerMobile;
-
-  // numeric left for mobile search button
   const searchButtonLeft = Math.round(width / 2 - 16);
 
   const NavLinks = ({ onClick }) => (
@@ -60,9 +70,7 @@ export default function HomeScreen() {
             <View
               style={[
                 styles.navCircle,
-                activeIndex === i
-                  ? styles.navCircleActive
-                  : styles.navCircleInactive,
+                activeIndex === i ? styles.navCircleActive : styles.navCircleInactive,
               ]}
             />
             <Text
@@ -80,119 +88,120 @@ export default function HomeScreen() {
   );
 
   return (
-    <ImageBackground
-      source={bannerSource}
-      style={styles.backgroundImage}
-      resizeMode="cover"
-    >
-      <View style={styles.container}>
-        {isWeb ? (
-          <View style={styles.webNavBar}>
-            <TouchableOpacity
-              style={styles.logoWrapper}
-              onPress={() => router.push("/")}
-              accessible={true}
-              accessibilityLabel="Go to Home"
-            >
-              <Image
-                source={logoBlack}
-                style={{
-                  width: logoWidth,
-                  height: logoHeight,
-                  resizeMode: "contain",
-                }}
-              />
-            </TouchableOpacity>
+    <View style={styles.outerContainer}>
+      <ImageBackground
+        source={isWeb ? bannerWeb : bannerMobile}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <View style={styles.container}>
+          {isWeb ? (
+            <View style={styles.webNavBar}>
+              <TouchableOpacity
+                style={styles.logoWrapper}
+                onPress={() => router.push("/")}
+                accessibilityLabel="Go to Home"
+              >
+                <ResponsiveImage source={logoBlack} widthRatio={0.2} aspectRatio={3} />
+              </TouchableOpacity>
 
-            <NavLinks />
+              <NavLinks />
 
-            <TouchableOpacity
-              style={styles.searchButtonWeb}
-              onPress={toggleSearch}
-              accessibilityLabel="Toggle search"
-            >
-              <Ionicons name="search" size={28} color="black" />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.mobileNavBar}>
-            <TouchableOpacity
-              style={styles.logoTouchable}
-              onPress={() => router.push("/")}
-              accessible={true}
-              accessibilityLabel="Go to Home"
-            >
-              <Image
-                source={logoBlack}
-                style={{
-                  width: logoWidth,
-                  height: logoHeight,
-                  resizeMode: "contain",
-                }}
-              />
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.searchButtonWeb}
+                onPress={toggleSearch}
+                accessibilityLabel="Toggle search"
+              >
+                <Ionicons name="search" size={28} color="black" />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.mobileNavBar}>
+              <TouchableOpacity
+                style={styles.logoTouchable}
+                onPress={() => router.push("/")}
+                accessibilityLabel="Go to Home"
+              >
+                <ResponsiveImage source={logoBlack} widthRatio={0.45} aspectRatio={3} />
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.searchButtonMobile, { left: searchButtonLeft }]}
-              onPress={toggleSearch}
-              accessibilityLabel="Toggle search"
-            >
-              <Ionicons name="search" size={28} color="black" />
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.searchButtonMobile, { left: searchButtonLeft }]}
+                onPress={toggleSearch}
+                accessibilityLabel="Toggle search"
+              >
+                <Ionicons name="search" size={28} color="black" />
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={toggleMenu}
-              style={styles.hamburgerButton}
-              accessibilityLabel="Menu toggle"
-            >
-              <Ionicons name="menu" size={32} color="black" />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={toggleMenu}
+                style={styles.hamburgerButton}
+                accessibilityLabel="Menu toggle"
+              >
+                <Ionicons name="menu" size={32} color="black" />
+              </TouchableOpacity>
 
-            <Modal visible={menuVisible} animationType="slide" transparent={true}>
-              <View style={styles.modalOverlay}>
-                <View style={styles.modalContent}>
-                  <TouchableOpacity
-                    onPress={toggleMenu}
-                    style={styles.closeButton}
-                    accessibilityLabel="Close menu"
-                  >
-                    <Ionicons name="close" size={32} color="black" />
-                  </TouchableOpacity>
-                  <ScrollView>
-                    <NavLinks onClick={toggleMenu} />
-                  </ScrollView>
+              <Modal visible={menuVisible} animationType="slide" transparent={true}>
+                <View style={styles.modalOverlay}>
+                  <View style={styles.modalContent}>
+                    <TouchableOpacity
+                      onPress={toggleMenu}
+                      style={styles.closeButton}
+                      accessibilityLabel="Close menu"
+                    >
+                      <Ionicons name="close" size={32} color="black" />
+                    </TouchableOpacity>
+                    <ScrollView>
+                      <NavLinks onClick={toggleMenu} />
+                    </ScrollView>
+                  </View>
                 </View>
-              </View>
-            </Modal>
-          </View>
-        )}
+              </Modal>
+            </View>
+          )}
 
-        {searchOpen && (
-          <View style={isWeb ? styles.searchBoxWeb : styles.searchBoxMobile}>
-            <TextInput
-              placeholder="Search for courses"
-              style={styles.searchInput}
-              autoFocus={true}
-            />
-          </View>
-        )}
-      </View>
-    </ImageBackground>
+          {searchOpen && (
+            <View style={isWeb ? styles.searchBoxWeb : styles.searchBoxMobile}>
+              <TextInput
+                placeholder="Search for courses"
+                style={styles.searchInput}
+                autoFocus={true}
+              />
+            </View>
+          )}
+        </View>
+      </ImageBackground>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  backgroundImage: {
+  outerContainer: {
     flex: 1,
     width: "100%",
     height: "100%",
   },
+
+  backgroundImage: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+
   container: {
     flex: 1,
     paddingTop: 50,
     paddingHorizontal: 20,
-    alignItems: "center",
     backgroundColor: "transparent",
+    width: "100%",
+  },
+
+  imageWrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
   },
 
   webNavBar: {
@@ -203,8 +212,6 @@ const styles = StyleSheet.create({
     maxWidth: 1200,
     paddingHorizontal: 40,
     paddingVertical: 10,
-    marginBottom: 10,
-    backgroundColor: "transparent",
   },
 
   logoWrapper: {
@@ -223,7 +230,7 @@ const styles = StyleSheet.create({
   navLinksVertical: {
     flexDirection: "column",
   },
-  
+
   navLinkItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -270,7 +277,6 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 10,
     marginBottom: 5,
-    backgroundColor: "transparent",
   },
 
   logoTouchable: {
@@ -315,7 +321,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 10,
   },
-  
+
   searchInput: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -324,13 +330,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: 16,
   },
+
+  
 });
-
-
-
-
-
-
-
-
 

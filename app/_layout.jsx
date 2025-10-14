@@ -13,6 +13,9 @@ import {
   View,
 } from "react-native";
 
+// Import the logo
+import logoBlack from "../assets/logoBlack.png";
+
 export default function HomeScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
@@ -78,7 +81,7 @@ export default function HomeScreen() {
             accessibilityLabel="Go to Home"
           >
             <Image
-              source={require("../assets/logo_black.png")}
+              source={logoBlack}
               style={{
                 width: logoWidth,
                 height: logoHeight,
@@ -106,7 +109,7 @@ export default function HomeScreen() {
             accessibilityLabel="Go to Home"
           >
             <Image
-              source={require("../assets/logo_black.png")}
+              source={logoBlack}
               style={{
                 width: logoWidth,
                 height: logoHeight,
@@ -305,6 +308,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+
 
 
 
